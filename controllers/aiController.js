@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 exports.explainNote = async (req, res) => {
   const { title, content } = req.body;
@@ -50,7 +50,9 @@ exports.improveNote = async (req, res) => {
 };
 
 exports.askAI = async (req, res) => {
+  console.log("👉 [DEBUG] AI Chat Request received from frontend!");
   const { prompt } = req.body;
+  console.log("👉 [DEBUG] Prompt content:", prompt);
   if (!process.env.GEMINI_API_KEY) {
     console.error("AI Error: GEMINI_API_KEY missing");
     return res.status(400).json({ error: "Gemini API key is not configured in the backend." });

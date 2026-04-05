@@ -179,6 +179,32 @@ exports.deleteNote = async (req, res) => {
   }
 };
 
+exports.editNote = async (req, res) => {
+  const { projectId, noteId, title, content } = req.body;
+  try {
+    const project = await Project.findOneAndUpdate(
+      { _id: projectId, "notes._id": noteId },
+      { 
+        $set: { 
+          "notes.$.title": title,
+          "notes.$.content": content 
+        } 
+      },
+      { new: true }
+    ).populate("owner", "name email")
+     .populate("members", "name email")
+     .populate("notes.addedBy", "name email");
+
+    if (!project) {
+       return res.status(404).json({ error: "Project or Note not found" });
+    }
+
+    res.json(project);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 exports.getPublicProject = async (req, res) => {
   const { publicId } = req.params;
